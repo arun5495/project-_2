@@ -2,8 +2,7 @@
 import streamlit as st
 from openai import OpenAI
 from apikey import api_data 
-import os
-import speech_recognition as sr # Converts my voice commands to text 
+import os 
 import pyttsx3 # Read out text output to voice. 
 import webbrowser 
 
