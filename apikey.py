@@ -1,1 +1,1 @@
-api-key=sk-("3f15d3e550a548efa55a6c1764160896")
+api-key="sk-3f15d3e550a548efa55a6c1764160896"
