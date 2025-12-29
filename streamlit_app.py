@@ -3,8 +3,7 @@ from openai import OpenAI
 import os
 
 # Set your key (prefer env var in real apps)
-DEEPSEEK_API_KEY = os.getenv"sk-3f15d3e550a548efa55a6c1764160896"
-
+DEEPSEEK_API_KEY = os.getenv("sk-3f15d3e550a548efa55a6c1764160896")
 client = OpenAI(
     api_key=DEEPSEEK_API_KEY,
     base_url="https://api.deepseek.com",
