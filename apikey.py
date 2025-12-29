@@ -1,1 +1,1 @@
-api_data='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'
+api-key=sk-("3f15d3e550a548efa55a6c1764160896")
