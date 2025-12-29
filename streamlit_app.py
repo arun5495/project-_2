@@ -1,67 +1,45 @@
-# -*- coding: utf-8 -*-
 import streamlit as st
 from openai import OpenAI
-from apikey import api_data 
-import os 
-import pyttsx3 # Read out text output to voice. 
-import webbrowser 
+import os
 
-Model = "gpt-4o"
-client = OpenAI(api_key=api_data)
+# Set your key (prefer env var in real apps)
+DEEPSEEK_API_KEY = os.getenv("sk-3f15d3e550a548efa55a6c1764160896
+")
 
-def Reply(question):
-    completion = client.chat.completions.create(
-        model=Model,
-        messages=[
-            {'role':"system","content":"You are a helful assistant"},
-            {'role':'user','content':question}
-        ],
-        max_tokens=200
+client = OpenAI(
+    api_key=DEEPSEEK_API_KEY,
+    base_url="https://api.deepseek.com",
+)
+
+MODEL = "deepseek-chat"  # or "deepseek-reasoner"
+
+st.title("DeepSeek Chatbot")
+
+# Initialize chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {"role": "system", "content": "You are a helpful assistant"}
+    ]
+
+# Show previous messages
+for msg in st.session_state.messages[1:]:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
+
+# User input
+if prompt := st.chat_input("Ask something..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    # Call DeepSeek
+    resp = client.chat.completions.create(
+        model=MODEL,
+        messages=st.session_state.messages,
+        max_tokens=200,
     )
-    answer = completion.choices[0].message.content
-    return answer 
+    answer = resp.choices[0].message.content
 
-# Text to speech 
-engine = pyttsx3.init('sapi5')
-voices = engine.getProperty('voices')
-engine.setProperty('voice', voices[0].id)
-
-def speak(text):
-    engine.say(text)
-    engine.runAndWait()
-    
-speak("Hello How are you?")
-
-def takeCommand():
-    
-    r = sr.Recognizer()
-    with sr.Microphone() as source: 
-        print('Listening .......')
-        r.pause_threshold = 1 # Wait for 1 sec before considering the end of a phrase
-        audio = r.listen(source)
-    try: 
-        print('Recogninzing ....')
-        query = r.recognize_google(audio, language = 'en-in')
-        print("User Said: {} \n".format(query))
-    except Exception as e:
-        print("Say that again .....")
-        return "None"
-    return query
-
-if __name__ == '__main__':
-    while True: 
-        query = takeCommand().lower()
-        if query == 'none':
-            continue
-        
-        ans = Reply(query)
-        print(ans)
-        speak(ans)
-        
-        # Specific Browser Related Tasks 
-        if "Open youtube" in query: 
-            webbrowser.open('www.youtube.com')
-        if "Open Google" in query: 
-            webbrowser.open('www.google.com')
-        if "bye" in query:
-            break 
+    st.session_state.messages.append({"role": "assistant", "content": answer})
+    with st.chat_message("assistant"):
+        st.markdown(answer)
